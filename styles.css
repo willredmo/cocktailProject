@@ -17,10 +17,11 @@ body {
     justify-content: center;
 }
 
+/* Main containers */
 #content {
     margin: 0 auto;
     display: flex;
-    height: calc(100% - 111px);
+    height: calc(100% - 89px);
     width: 100%; 
     position: relative;
 }
@@ -33,7 +34,7 @@ body {
 }
 
 #left {
-    flex-direction: row;
+    flex-wrap: wrap;
     width: 600px;
     overflow: visible;
 }
@@ -46,6 +47,7 @@ body {
     padding: 5px;
 }   
 
+/* Custom scroll bars */
 .drinkList::-webkit-scrollbar-track, #right::-webkit-scrollbar-track {
 	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
 	border-radius: 10px;
@@ -70,6 +72,7 @@ body {
     flex-shrink: 0;
 }
 
+/* Header */
 #header {
     width: 100%;
     padding-left: 30px;
@@ -93,7 +96,7 @@ body {
     display: none;
 }
 
-/* Drink list */
+/* Filters */
 .filterSection, .searchSection {
     display: flex;
     flex-wrap: wrap;
@@ -107,6 +110,8 @@ body {
 
 .filters {
     padding: 10px;
+    height: 100%;
+    width: 50%;
 }
 
 .filters button {
@@ -142,10 +147,11 @@ body {
 .filterSection .inner {
     overflow-x: hidden;
 }
- 
-.ingredient .img {
-    width: 100px;
-    height: 100px;    
+
+/* Drink list */
+.drinkList {
+    width: 50%;
+    overflow-y: auto;
 }
 
 .drinkItem {
@@ -190,14 +196,6 @@ body {
     margin: 0;
     padding: 5px;
     font-weight: 400;
-}
-
-.filters, .drinkList {
-    width: 50%;
-}
-
-.drinkList {
-    overflow-y: auto;
 }
 
 /* Drink Info */
@@ -247,6 +245,11 @@ body {
 
 .drink .ingredient .middle {
     margin-bottom: 12px;
+}
+
+.drink .ingredient .img {
+    width: 100px;
+    height: 100px; 
 }
 
 .drink .info {
