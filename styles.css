@@ -1,0 +1,258 @@
+* {
+    padding: 0;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+body, html {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    background-color: #F7F7F7;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#content {
+    margin: 0 auto;
+    display: flex;
+    height: calc(100% - 111px);
+    width: 100%; 
+    position: relative;
+}
+
+#left, #right {
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#left {
+    flex-direction: row;
+    width: 600px;
+    overflow: visible;
+}
+
+#right {
+    width: calc(100% - 600px);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 5px;
+}   
+
+.drinkList::-webkit-scrollbar-track, #right::-webkit-scrollbar-track {
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+	background-color: #F5F5F5;
+}
+
+.drinkList::-webkit-scrollbar, #right::-webkit-scrollbar {
+	width: 16px;
+	background-color: #F5F5F5;
+}
+
+.drinkList::-webkit-scrollbar-thumb, #right::-webkit-scrollbar-thumb {
+	border-radius: 10px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color: rgb(0,123,255);
+}
+
+.img {
+    background-repeat: no-repeat;  
+    background-size: contain;
+    background-position: center;
+    flex-shrink: 0;
+}
+
+#header {
+    width: 100%;
+    padding-left: 30px;
+    padding-right: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#header h1 {
+    font-weight: 100;
+    font-size: 40px;
+}
+
+#header hr {
+    width: 100%;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Drink list */
+.filterSection, .searchSection {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.searchSection span, .filterSection span {
+    font-weight: 400;
+    font-size: 20px;
+    margin-left: 42px;
+}
+
+.filters {
+    padding: 10px;
+}
+
+.filters button {
+    width: 100%;
+}
+
+.filters h2 {
+    text-align: center;
+    font-weight: 300;
+}
+
+.filters > div {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.filterSection span {
+    width: 100%;
+}
+
+.filterSection i {
+    font-size: 34px;
+}
+
+.filterSection input {
+    width: calc(100% - 34px);   
+}
+
+.filterSection .selected {
+    background-color: #bbdcffe8;
+}
+
+.filterSection .inner {
+    overflow-x: hidden;
+}
+ 
+.ingredient .img {
+    width: 100px;
+    height: 100px;    
+}
+
+.drinkItem {
+    cursor: pointer;
+    min-height: 200px;
+    position: relative;
+    overflow: hidden;
+}
+
+.drinkItem:hover .img {
+    filter: grayscale(0%);
+}
+
+.drinkItem .img {
+    width: 100%;
+    height: 120px;
+    height: 100%;
+    position: absolute;
+    z-index: -1;
+    background-size: cover;
+    transition: filter .2s;
+    filter: grayscale(90%);
+}
+
+.drinkItem .title::before {
+    content: "";
+    position: absolute;
+    top: -70px;
+    background: rgb(0,123,255);
+    background: linear-gradient(0deg, rgba(0,123,255,1) 0%, rgba(0,123,255,0) 59%);
+    height: 70px;
+    width: 100%;
+    left: 0px;
+}
+
+.drinkItem .title {
+    position: absolute;
+    min-width: 100%;
+    color: #F7F7F7;
+    background: rgb(0,123,255);
+    bottom: 0;
+    margin: 0;
+    padding: 5px;
+    font-weight: 400;
+}
+
+.filters, .drinkList {
+    width: 50%;
+}
+
+.drinkList {
+    overflow-y: auto;
+}
+
+/* Drink Info */
+.drink .header {
+    display: flex;
+}
+
+.drink .headerInfo {
+    margin-left: 10px;
+}
+
+.drink h1 {
+    font-weight: 300;
+}
+
+.drink .ingredients h2 {
+    font-weight: 400;
+    padding-left: 10px;
+}
+
+.drink .instructions h2 {
+    font-weight: 400;
+}
+
+.drink .header .img {
+    height: 300px;
+    width: 300px;
+}
+
+.drink .filterInfo {
+    display: flex;
+}
+
+.drink .filterInfo i {
+    margin-right: 5px;
+}
+
+.drink .ingredient {
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+.drink .ingredient:last-of-type {
+    padding-bottom: 15px;
+}
+
+.drink .ingredient .middle {
+    margin-bottom: 12px;
+}
+
+.drink .info {
+    display: flex;
+}
+
+.drink .ingredients, .drink .instructions {
+    width: 50%
+}
