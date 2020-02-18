@@ -7,7 +7,8 @@ var drinkData,
         ingredient: [], 
         glass: [], 
         alcoholicFilter: []
-    };
+    },
+    imagesLoading = 0;
 
 $(window).on("load", () => {
     getNewData = false;
@@ -22,9 +23,9 @@ $(window).on("load", () => {
             initFilters();
             displayRandom();
             displayDrinkList();
-        });
+        });   
     }
-
+    
 });
 
 function initRandom() {
@@ -35,6 +36,9 @@ function initRandom() {
 
 function initFilters() {
     var container = $("#left .filters");
+    
+    // https://developer.snapappointments.com/bootstrap-select/methods/#selectpickermobile
+
     // Categories
     var categoriesContainer = $(container).find(".categories");
     drinkData.categories.forEach(category => {
@@ -83,9 +87,6 @@ function initFilters() {
         $("#search").val("");
         filterDrinks("searchText", "");
     });
-    
-    // Make select pickers
-    // $(container).find("select").selectpicker();
 }
 
 function filterDrinks(prop, value) {
@@ -156,6 +157,21 @@ function filterDrinks(prop, value) {
         }
     });
 
+    // Add prop to hide 
+    function addProp(id, prop) {
+		var index = filterResults[id].indexOf(prop);
+		if (!(index > -1)) {
+			filterResults[id].push(prop);
+		}
+    }
+    // Remove prop to hide 
+	function removeProp(id, prop) {
+		var index = filterResults[id].indexOf(prop);
+		if (index > -1) {
+			filterResults[id].splice(index, 1);
+		}
+    }
+
     // Hide/show drinks according to filter
 	for (var id in filterResults) {
         // Drinks that don't match
@@ -164,21 +180,8 @@ function filterDrinks(prop, value) {
 		} else {
 			$("#drink_" + id).show();
 		}
-	}
-
-
-    function addProp(id, prop) {
-		var index = filterResults[id].indexOf(prop);
-		if (!(index > -1)) {
-			filterResults[id].push(prop);
-		}
-	}
-	function removeProp(id, prop) {
-		var index = filterResults[id].indexOf(prop);
-		if (index > -1) {
-			filterResults[id].splice(index, 1);
-		}
     }
+    updateTotalDrinks();
 }
 
 
@@ -199,20 +202,38 @@ function displayDrinkList() {
         var drink = drinkData.drinks[drinkId];
         filterResults[drinkId] = [];
         displayDrinkItem(drink);
-        console.log(drink);
     });
+    updateTotalDrinks();
 }
 
 function displayDrinkItem(drink) {
     var container = $("#templates .drinkItem").clone();
     $(container).attr("id", "drink_"+drink.idDrink);
-    $(container).find(".img").css("background-image", "url("+drink.strDrinkThumb+")");
+
+    // Handle keeping track of loading drink thumbnails
+    imagesLoading++;
+    $('<img/>').attr('src', drink.strDrinkThumb).on('load', function() {
+        $(this).remove();
+        $(container).find(".img").css("background-image", "url("+drink.strDrinkThumb+")");
+        imagesLoading--;
+        checkIfDoneLoading();
+    });
     $(container).find(".title").text(drink.strDrink);
     
     $(container).click((e) => {
         displayDrink(drink);
     });
     $("#left .drinkList").append(container);
+}
+
+function checkIfDoneLoading() {
+    var percent = Math.round(100 - ((imagesLoading/drinkData.drinkIds.length) * 100));
+    if (imagesLoading == 0) {
+        $("#loading").hide();
+    }
+    
+    // Update progress bar
+    $("#loading .progress-bar").text(percent+"%").attr("aria-valuenow", percent).css("width", percent+"%");
 }
 
 function displayDrink(drink) {
@@ -251,14 +272,15 @@ function displayDrink(drink) {
 function generateIngredientHtml(name, measure) {
     var container = $("#templates .ingredient").clone();
     $(container).find(".name").text(name);
-    console.log(measure);
     if (measure != null) {
         $(container).find(".middle").removeClass("hidden");
         $(container).find(".measure").text(measure);
     }
     var imgUrl = 'url("'+"https://www.thecocktaildb.com/images/ingredients/"+encodeURI(name)+".png"+'")';
-    console.log(imgUrl);
     $(container).find(".img").css("background-image", imgUrl);
     return container;
 }
 
+function updateTotalDrinks() {
+    $(".totalDrinks").text("Cocktails: "+$(".drinkItem:visible").length);
+}

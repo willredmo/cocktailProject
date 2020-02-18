@@ -81,6 +81,11 @@ function addIngredients(drink) {
         }
         ingredientNum++;
         curIngredient = drink["strIngredient"+(ingredientNum)];
+        // Remove empty ingredients
+        if (curIngredient == "") {
+            drink["strIngredient"+(ingredientNum)] = null;
+            drink["strMeasure"+(ingredientNum)] = null;
+        }
     }
     return ingredientList;
 }
