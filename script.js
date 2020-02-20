@@ -1,6 +1,7 @@
 
 var drinkData,
     filterResults = {},
+    filterOption = "one",
     filters = {
         searchText: "", 
         category: [], 
@@ -17,12 +18,13 @@ $(window).on("load", () => {
         getData();
     } else {
         $.get("drinks.json").then((data) => {
-            console.log(data);
+            // console.log(data);
             drinkData = data;
             initRandom();
             initFilters();
             displayRandom();
             displayDrinkList();
+            initFiltersButton();
         });   
     }
     
@@ -34,9 +36,31 @@ function initRandom() {
     });
 }
 
+function initFiltersButton() {
+    $(".filtersIcon").click(() => {
+        if($(".filters").hasClass("show")) {
+            $(".filters").removeClass("show");
+        } else {
+            $(".filters").addClass("show");
+        }
+    });
+    $(".filters .close").click(() => {
+        $(".filters").removeClass("show");
+    });
+}
+
+function initMobileSelectPickers() {
+    if(/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
+        console.log("mobile");
+        console.log($('.bootstrap-select').length);
+        // $('.bootstrap-select').selectpicker('mobile');
+        $.fn.selectpicker.Constructor.DEFAULTS.mobile = true;
+    }
+}
+
 function initFilters() {
     var container = $("#left .filters");
-    
+    initMobileSelectPickers();
     // https://developer.snapappointments.com/bootstrap-select/methods/#selectpickermobile
 
     // Categories
@@ -55,6 +79,21 @@ function initFilters() {
     });
     $(ingredientContainer).selectpicker("refresh").change((e) => {
         filterDrinks("ingredient", $(ingredientContainer).selectpicker("val"));
+    });
+
+    // Ingredient options
+    var ingredientOptionsContainer = $(container).find(".ingredientsOptions");
+    $(ingredientOptionsContainer).find(".one").click(() => {
+        if (filterOption != "one") {
+            filterOption = "one";
+            filterDrinks("ingredient", $(ingredientContainer).selectpicker("val"));
+        }
+    });
+    $(ingredientOptionsContainer).find(".all").click(() => {
+        if (filterOption != "all") {
+            filterOption = "all";
+            filterDrinks("ingredient", $(ingredientContainer).selectpicker("val"));
+        }
     });
 
     // Glasses
@@ -104,30 +143,32 @@ function filterDrinks(prop, value) {
             if (value.length == 0) {
 				removeProp(drinkId, "ingredient");
 			} else {
-                // Contain all ingredients
-                // var matched = true;
-                // value.forEach(ingredient => {
-                //     if ($.inArray(ingredient, drink.ingredientList) == -1) {
-                //         matched = false;
-                //         removeProp(drinkId, "ingredient");
-                //         addProp(drinkId, "ingredient");
-                //     }
-                // });
-                // if (matched) {
-				// 	removeProp(drinkId, "ingredient");
-                // }
-
-
-                // Contain any of the ingredients
-                var matched = false;
-                drink.ingredientList.forEach(ingredient => {
-                    if (value.indexOf(ingredient) > -1) {
-						matched = true;
-						removeProp(drinkId, "ingredient");
-					}
-                });
-                if (!matched) {
-					addProp(drinkId, "ingredient");
+                var matched;
+                if (filterOption == "one") {
+                    // Contain any of the ingredients
+                    matched = false;
+                    drink.ingredientList.forEach(ingredient => {
+                        if (value.indexOf(ingredient) > -1) {
+                            matched = true;
+                            removeProp(drinkId, "ingredient");
+                        }
+                    });
+                    if (!matched) {
+                        addProp(drinkId, "ingredient");
+                    }
+                } else {
+                    // Contain all ingredients
+                    matched = true;
+                    value.forEach(ingredient => {
+                        if ($.inArray(ingredient, drink.ingredientList) == -1) {
+                            matched = false;
+                            removeProp(drinkId, "ingredient");
+                            addProp(drinkId, "ingredient");
+                        }
+                    });
+                    if (matched) {
+                    	removeProp(drinkId, "ingredient");
+                    }
                 }
             } 
         } else if (prop == "glass") {
@@ -197,7 +238,7 @@ function displayRandom() {
 }
 
 function displayDrinkList() {
-    console.log(drinkData.drinkIds);
+    // console.log(drinkData.drinkIds);
     drinkData.drinkIds.forEach(drinkId => {
         var drink = drinkData.drinks[drinkId];
         filterResults[drinkId] = [];
@@ -221,6 +262,7 @@ function displayDrinkItem(drink) {
     $(container).find(".title").text(drink.strDrink);
     
     $(container).click((e) => {
+        
         displayDrink(drink);
     });
     $("#left .drinkList").append(container);
@@ -257,6 +299,7 @@ function displayDrink(drink) {
 
     $(container).find(".instructions p").text(drink.strInstructions);
     if (drink.strAlcoholic == "Non alcoholic") {
+        $(container).find(".alcoholic i").text("cancel");
         $(container).find(".alcoholic p").text("Does not contain alcohol");
     } else {
         $(container).find(".alcoholic p").text("Contains alcohol");

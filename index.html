@@ -39,7 +39,7 @@
 </head>
 
 <body>
-    <div id="loading" style="display:none">
+    <div id="loading">
         <div class="progress">
             <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">0%</div>
         </div>
@@ -58,6 +58,7 @@
                 reorder
             </i>
             <div class="filters">
+                <i class="material-icons close">close</i>
                 <h2>Filters</h2>
                 <div class="filterSection">
                     <span>Search</span>
@@ -73,6 +74,10 @@
                     <span>Ingredients</span>
                     <i class="material-icons">post_add</i>
                     <select class="ingredients" data-live-search="true" multiple></select>
+                    <div class="ingredientsOptions">
+                        <label><input name="ingredientsOptions" type="radio" class="one" checked><span>Contains at least selected one ingredient</span></label>
+                        <label><input name="ingredientsOptions" type="radio" class="all"><span>Contains all selected ingredients</span></label>
+                    </div>
                 </div>
                 <div class="filterSection">
                     <span>Glasses</span>
@@ -80,8 +85,8 @@
                     <select class="glasses" multiple></select>
                 </div>
                 <div class="filterSection">
-                    <span>Non-alcoholic</span>
-                    <i class="material-icons">cancel</i>
+                    <span>Alcohol Content</span>
+                    <i class="material-icons">info</i>
                     <select class="alcoholicFilters" multiple></select>
                 </div>
                 
@@ -110,7 +115,7 @@
                         <p></p>
                     </div>
                     <div class="alcoholic filterInfo">
-                        <i class="material-icons">cancel</i>
+                        <i class="material-icons">check_circle_outline</i>
                         <p></p>
                     </div>
                 </div>
