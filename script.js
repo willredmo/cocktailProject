@@ -9,7 +9,8 @@ var drinkData,
         glass: [], 
         alcoholicFilter: []
     },
-    imagesLoading = 0;
+    imagesLoading = 0,
+    drinksDisplayed = [];
 
 $(window).on("load", () => {
     getNewData = false;
@@ -17,14 +18,15 @@ $(window).on("load", () => {
     if (getNewData) {
         getData();
     } else {
+        $("#content, #header").addClass("blur");
         $.get("drinks.json").then((data) => {
-            // console.log(data);
+            console.log(data);
             drinkData = data;
             initRandom();
             initFilters();
-            displayRandom();
             displayDrinkList();
             initFiltersButton();
+            displayRandom();
         });   
     }
     
@@ -32,28 +34,33 @@ $(window).on("load", () => {
 
 function initRandom() {
     $("#random").click(() => {
+        $("#content").addClass("show");
         displayRandom();
     });
 }
 
 function initFiltersButton() {
+    $(".filters").on('transitionend webkitTransitionEnd oTransitionEnd', function (e) {
+        // your event handler
+        if ($(e.target).hasClass("show")) {
+            $(e.target).addClass("done");
+        }
+    });
+
     $(".filtersIcon").click(() => {
         if($(".filters").hasClass("show")) {
-            $(".filters").removeClass("show");
+            $(".filters").removeClass("show done");
         } else {
             $(".filters").addClass("show");
         }
     });
     $(".filters .close").click(() => {
-        $(".filters").removeClass("show");
+        $(".filters").removeClass("show done");
     });
 }
 
 function initMobileSelectPickers() {
     if(/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
-        console.log("mobile");
-        console.log($('.bootstrap-select').length);
-        // $('.bootstrap-select').selectpicker('mobile');
         $.fn.selectpicker.Constructor.DEFAULTS.mobile = true;
     }
 }
@@ -203,7 +210,7 @@ function filterDrinks(prop, value) {
 		var index = filterResults[id].indexOf(prop);
 		if (!(index > -1)) {
 			filterResults[id].push(prop);
-		}
+        }
     }
     // Remove prop to hide 
 	function removeProp(id, prop) {
@@ -213,15 +220,18 @@ function filterDrinks(prop, value) {
 		}
     }
 
+    drinksDisplayed = drinkData.drinkIds.slice(0);
     // Hide/show drinks according to filter
 	for (var id in filterResults) {
         // Drinks that don't match
 		if (filterResults[id].length > 0) {
-			$("#drink_" + id).hide();
+            $("#drink_" + id).hide();
+            drinksDisplayed.splice(drinksDisplayed.indexOf(id), 1);
 		} else {
-			$("#drink_" + id).show();
+            $("#drink_" + id).show();
 		}
     }
+    console.log(drinksDisplayed);
     updateTotalDrinks();
 }
 
@@ -243,8 +253,56 @@ function displayDrinkList() {
         var drink = drinkData.drinks[drinkId];
         filterResults[drinkId] = [];
         displayDrinkItem(drink);
+        drinksDisplayed.push(drinkId);
     });
     updateTotalDrinks();
+    initColorDrinkListMobile();
+}
+
+
+function initColorDrinkListMobile() {
+    $("#left .drinkList").scroll(e => {
+        // check if mobile
+        if ($(window).width() < 700) {
+            var drinkListHeight = $("#left .drinkList").height();
+            // console.log($("#left .drinkList").height());
+            var heightOfDrinkItem = $("#left .drinkList > div").height();
+            var maxNumberOfDrinks = Math.ceil(drinkListHeight/heightOfDrinkItem);
+            var scrollTop = e.target.scrollTop;
+            var currentListItem = Math.ceil(scrollTop / heightOfDrinkItem) + 1;
+            $("#left .drinkList > div").removeClass("active");
+            for (var i = 0; i < maxNumberOfDrinks; i++) {
+                checkIfDrinkVisible(currentListItem + i, heightOfDrinkItem, scrollTop, (scrollTop + drinkListHeight));
+            }
+        }
+    });
+
+    // On start
+    if ($(window).width() < 700) {
+        var drinkListHeight = $("#left .drinkList").height();
+        var heightOfDrinkItem = $("#left .drinkList > div").height();
+        var maxNumberOfDrinks = Math.floor(drinkListHeight/heightOfDrinkItem);
+        var scrollTop = $("#left .drinkList")[0].scrollTop;
+        var currentListItem = Math.ceil(scrollTop / heightOfDrinkItem) + 1;
+        for (var i = 0; i < maxNumberOfDrinks; i++) {
+            checkIfDrinkVisible(currentListItem + i, heightOfDrinkItem, scrollTop, (scrollTop + drinkListHeight));
+        }
+    }
+
+    function checkIfDrinkVisible(index, heightOfDrink, scrollTop, scrollBottom) {
+        var topOfItem = (index * heightOfDrink) - heightOfDrink;
+        var bottomOfItem = (index * heightOfDrink);
+        // console.log("Check item");
+        // console.log("Top of item: " + topOfItem);
+        // console.log("Scroll top: " + scrollTop);
+        // console.log("Bottom of item: " + bottomOfItem);
+        // console.log("Scroll bottom: " + scrollBottom);
+        if (topOfItem >= scrollTop && bottomOfItem <= scrollBottom) {
+            // console.log(index);
+            // console.log(drinkData.drinks[drinksDisplayed[index-1]]);
+            $("#drink_"+drinksDisplayed[index-1]).addClass("active");
+        }
+    }
 }
 
 function displayDrinkItem(drink) {
@@ -262,7 +320,9 @@ function displayDrinkItem(drink) {
     $(container).find(".title").text(drink.strDrink);
     
     $(container).click((e) => {
-        
+        $("#content").addClass("show");
+        $("#left .drinkList .active").removeClass("active");
+        $(container).addClass("active");
         displayDrink(drink);
     });
     $("#left .drinkList").append(container);
@@ -272,6 +332,7 @@ function checkIfDoneLoading() {
     var percent = Math.round(100 - ((imagesLoading/drinkData.drinkIds.length) * 100));
     if (imagesLoading == 0) {
         $("#loading").hide();
+        $("#content, #header").removeClass("blur");
     }
     
     // Update progress bar
@@ -306,9 +367,13 @@ function displayDrink(drink) {
     }
     $(container).find(".category p").text(drink.strCategory);
     $(container).find(".glass p").text(drink.strGlass);
+    
+    $(container).find(".goBack").click(() => {
+        $("#left .drinkList .active").removeClass("active");
+        $("#content").removeClass("show");
+    });
 
     $("#right").empty().append(container);
-
     $("#right").scrollTop(0);
 }
 
