@@ -4,7 +4,36 @@ var mainData = {
         ingredients: [],
         categories: [],
         glasses: [],
-        alcoholicFilters: []
+        alcoholicFilters: [],
+        nonFilterIngredients: [ // Common ingredients
+            "Ice",
+            "Sugar",
+            "Water",
+            "Tomato juice",
+            "Tabasco sauce",
+            "Salt",
+            "Raisins",
+            "Pepper",
+            "Orange",
+            "Orange peel",
+            "Orange juice",
+            "Orange spiral",
+            "Milk",
+            "Lime",
+            "Lime juice",
+            "Lime peel",
+            "Lemon",
+            "Lemon juice",
+            "Lemon peel",
+            "Ice",
+            "Honey",
+            "Fruit",
+            "Cream",
+            "Apple",
+            "Soda water",
+            "Club soda",
+            "Vanilla extract"
+        ]
     };
 
 function getData() {
@@ -73,12 +102,21 @@ function addIngredients(drink) {
     var ingredientList = [];
     while (curIngredient != null && curIngredient != "") {
         curIngredient = formatString(curIngredient);
-        mainData.drinks[drink.idDrink]["strIngredient"+(ingredientNum)] = curIngredient;
-        ingredientList.push(curIngredient);
-        
-        if (!mainData.ingredients.includes(curIngredient)) {
-            mainData.ingredients.push(curIngredient);
+        if (curIngredient == "Whisky") {
+            curIngredient = "Whiskey";
         }
+        mainData.drinks[drink.idDrink]["strIngredient"+(ingredientNum)] = curIngredient;
+        
+        if (!mainData.nonFilterIngredients.includes(curIngredient)) {
+            ingredientList.push(curIngredient);
+            if (!mainData.ingredients.includes(curIngredient)) {
+                mainData.ingredients.push(curIngredient);
+            }
+        }
+        
+        // if (!mainData.ingredients.includes(curIngredient)) {
+        //     mainData.ingredients.push(curIngredient);
+        // }
         ingredientNum++;
         curIngredient = drink["strIngredient"+(ingredientNum)];
         // Remove empty ingredients
@@ -101,7 +139,7 @@ function addCategory(category) {
 }
 
 function addGlass(glass) {
-    if (!mainData.glasses.includes(glass)) {
+    if (!mainData.glasses.includes(glass) && glass != "") {
         mainData.glasses.push(glass);
     }
 }

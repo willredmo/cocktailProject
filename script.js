@@ -89,19 +89,19 @@ function initFilters() {
     });
 
     // Ingredient options
-    var ingredientOptionsContainer = $(container).find(".ingredientsOptions");
-    $(ingredientOptionsContainer).find(".one").click(() => {
-        if (filterOption != "one") {
-            filterOption = "one";
-            filterDrinks("ingredient", $(ingredientContainer).selectpicker("val"));
-        }
-    });
-    $(ingredientOptionsContainer).find(".all").click(() => {
-        if (filterOption != "all") {
-            filterOption = "all";
-            filterDrinks("ingredient", $(ingredientContainer).selectpicker("val"));
-        }
-    });
+    // var ingredientOptionsContainer = $(container).find(".ingredientsOptions");
+    // $(ingredientOptionsContainer).find(".one").click(() => {
+    //     if (filterOption != "one") {
+    //         filterOption = "one";
+    //         filterDrinks("ingredient", $(ingredientContainer).selectpicker("val"));
+    //     }
+    // });
+    // $(ingredientOptionsContainer).find(".all").click(() => {
+    //     if (filterOption != "all") {
+    //         filterOption = "all";
+    //         filterDrinks("ingredient", $(ingredientContainer).selectpicker("val"));
+    //     }
+    // });
 
     // Glasses
     var glassesContainer = $(container).find(".glasses");
@@ -150,33 +150,52 @@ function filterDrinks(prop, value) {
             if (value.length == 0) {
 				removeProp(drinkId, "ingredient");
 			} else {
-                var matched;
-                if (filterOption == "one") {
-                    // Contain any of the ingredients
-                    matched = false;
-                    drink.ingredientList.forEach(ingredient => {
-                        if (value.indexOf(ingredient) > -1) {
-                            matched = true;
-                            removeProp(drinkId, "ingredient");
-                        }
-                    });
-                    if (!matched) {
-                        addProp(drinkId, "ingredient");
+                
+                var ingredientsMatched = 0;
+                drink.ingredientList.forEach(ingredient => {
+                    if (value.includes(ingredient)) {
+                        ingredientsMatched++;
                     }
+                });
+
+                if (ingredientsMatched >= value.length) {
+                    removeProp(drinkId, "ingredient");
+                } else if (ingredientsMatched >= drink.ingredientList.length) {
+                    removeProp(drinkId, "ingredient");
                 } else {
-                    // Contain all ingredients
-                    matched = true;
-                    value.forEach(ingredient => {
-                        if ($.inArray(ingredient, drink.ingredientList) == -1) {
-                            matched = false;
-                            removeProp(drinkId, "ingredient");
-                            addProp(drinkId, "ingredient");
-                        }
-                    });
-                    if (matched) {
-                    	removeProp(drinkId, "ingredient");
-                    }
+                    removeProp(drinkId, "ingredient");
+                    addProp(drinkId, "ingredient");
                 }
+                
+
+
+
+                // if (filterOption == "one") {
+                //     // Contain any of the ingredients
+                //     matched = false;
+                //     drink.ingredientList.forEach(ingredient => {
+                //         if (value.indexOf(ingredient) > -1) {
+                //             matched = true;
+                //             removeProp(drinkId, "ingredient");
+                //         }
+                //     });
+                //     if (!matched) {
+                //         addProp(drinkId, "ingredient");
+                //     }
+                // } else {
+                //     // Contain all ingredients
+                //     matched = true;
+                //     value.forEach(ingredient => {
+                //         if ($.inArray(ingredient, drink.ingredientList) == -1) {
+                //             matched = false;
+                //             removeProp(drinkId, "ingredient");
+                //             addProp(drinkId, "ingredient");
+                //         }
+                //     });
+                //     if (matched) {
+                //     	removeProp(drinkId, "ingredient");
+                //     }
+                // }
             } 
         } else if (prop == "glass") {
             if (value.length == 0) {
@@ -231,7 +250,6 @@ function filterDrinks(prop, value) {
             $("#drink_" + id).show();
 		}
     }
-    console.log(drinksDisplayed);
     updateTotalDrinks();
 }
 
